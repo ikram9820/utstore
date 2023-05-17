@@ -6,15 +6,19 @@ from store.admin import ProductAdmin, ProductImageInline
 from tags.models import TaggedItem
 from .models import User
 
+from .forms import CustomUserCreationForm, CustomUserChangeForm
+
+
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('username', 'password1', 'password2', 'email', 'first_name', 'last_name'),
-        }),
-    )
+    add_form = CustomUserCreationForm
+    form = CustomUserChangeForm
+    list_display = [
+        "email",
+        "username",
+        "is_superuser",
+    ]
 
 
 class TagInline(GenericTabularInline):
@@ -28,3 +32,5 @@ class CustomProductAdmin(ProductAdmin):
 
 admin.site.unregister(Product)
 admin.site.register(Product, CustomProductAdmin)
+
+

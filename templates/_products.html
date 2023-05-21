@@ -2,11 +2,9 @@
   {% for product in products %}
   <div class="col">
     <div class="card">
-      {% comment %} <img
-        src="{{product.images[0].url}}"
-        class="card-img-top"
-        alt="{{product.title}}"
-      /> {% endcomment %}
+      {% with product.images.first as first_image %} {% if first_image %}
+      <img src="{{first_image.image}}" />
+      {% endif %} {% endwith %}
       <div class="card-body">
         <div class="row">
           <div class="col-6">
@@ -16,6 +14,13 @@
             <p class="card-title">{{product.unit_price}}</p>
           </div>
         </div>
+        <button
+          hx-get="{% url 'add_to_cart' pk=product.id %}"
+        
+          class="btn btn-primary btn-sm"
+        >
+          add to cart
+        </button>
       </div>
     </div>
   </div>

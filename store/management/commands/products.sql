@@ -3,6 +3,7 @@ insert into
   store_product (
     id,
     title,
+    slug,
     description,
     unit_price,
     inventory,

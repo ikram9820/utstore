@@ -1,11 +1,18 @@
 from django.contrib import admin
 from django.conf import settings
 from django.core.validators import MinValueValidator
+from django.db.models.query import QuerySet
+from django.utils.text import slugify
 from django.db import models
 from uuid import uuid4
 
+from django.urls import reverse
+
 from store.validators import validate_file_size
 
+class ProductAvailableManager(models.Manager):
+    def get_queryset(self) -> QuerySet:
+        return super().get_queryset().filter(inventory__gte=1)
 
 class Promotion(models.Model):
     description = models.CharField(max_length=255)
@@ -14,19 +21,33 @@ class Promotion(models.Model):
 
 class Collection(models.Model):
     title = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255,unique=True,null=True,blank=True)
     featured_product = models.ForeignKey(
         'Product', on_delete=models.SET_NULL, null=True, related_name='+', blank=True)
 
     def __str__(self) -> str:
         return self.title
 
+    def get_absolute_url(self):
+        return reverse('store:product_list_by_collection', args=[self.slug])
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+                
     class Meta:
         ordering = ['title']
+        indexes = [models.Index(fields=["title"])]
+        verbose_name = "Collection"
+        verbose_name_plural = "Collections"
+
+    
 
 
 class Product(models.Model):
     title = models.CharField(max_length=255)
-    slug = models.SlugField()
+    slug = models.SlugField(max_length=255,null=True,blank=True)
     description = models.TextField(null=True, blank=True)
     unit_price = models.DecimalField(
         max_digits=6,
@@ -38,11 +59,27 @@ class Product(models.Model):
         Collection, on_delete=models.PROTECT, related_name='products')
     promotions = models.ManyToManyField(Promotion, blank=True)
 
+    available = ProductAvailableManager()
+
     def __str__(self) -> str:
         return self.title
+    
+    def get_absolute_url(self):
+        return reverse('store:product_detail', args=[self.id, self.slug])
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+
+
 
     class Meta:
         ordering = ['title']
+        indexes = [models.Index(fields=["id","slug"]),
+                   models.Index(fields=['title']),
+                   models.Index(fields=["-last_update"])]
+        
 
 
 class ProductImage(models.Model):

@@ -6,20 +6,12 @@ from django.urls import path, include
 
 
 urlpatterns = [
-    # Django admin
     path("admin/", admin.site.urls),  
-    # User management
     path("accounts/", include("allauth.urls")),
-    # Local apps
-    path("", include("pages.urls")),
-    path("products/", include("store.urls")),
-] + static(
-    settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
-) 
+    path("", include(("store.urls","store"), namespace='store')),
+] 
 
 if settings.DEBUG: 
     import debug_toolbar
-
-    urlpatterns = [
-        path("__debug__/", include(debug_toolbar.urls)),
-    ] + urlpatterns
+    urlpatterns += static( settings.MEDIA_URL, document_root=settings.MEDIA_ROOT ) 
+    urlpatterns += [ path("__debug__/", include(debug_toolbar.urls)),]

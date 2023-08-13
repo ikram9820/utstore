@@ -7,7 +7,7 @@
     {% static 'img/no_image.png' %}{% endif %}">
     <h1>{{ product.title }}</h1>
     <h2>
-    <a href="{{ product.category.get_absolute_url }}">
+    <a href="{{ product.collection.get_absolute_url }}">
     {{ product.collection }}
     </a>
     </h2>

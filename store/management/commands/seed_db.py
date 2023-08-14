@@ -30,6 +30,8 @@ def save():
     for c in collections: c.save()
 
     products = Product.objects.all()
-    for p in products: p.save()
+    for p in products: 
+        p.slug = slugify(p.title)
+        p.save()
     
         

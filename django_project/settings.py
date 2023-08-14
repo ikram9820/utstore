@@ -30,15 +30,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sites",
     # Third-party
-    "crispy_forms",
-    "crispy_bootstrap5",
-    "allauth",
-    "allauth.account",
     "debug_toolbar",
     # Local
-    "likes",
     "store",
-    "tags"
 ]
 
 MIDDLEWARE = [
@@ -134,29 +128,8 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-
-
-# django-crispy-forms
-CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5" 
-CRISPY_TEMPLATE_PACK = "bootstrap5"  # new
-
-# django-allauth config
-LOGIN_REDIRECT_URL = "home"
-ACCOUNT_LOGOUT_REDIRECT = "home"  # new
 SITE_ID = 1
-AUTHENTICATION_BACKENDS = (
-    "django.contrib.auth.backends.ModelBackend",
-    "allauth.account.auth_backends.AuthenticationBackend",
-)
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  
-ACCOUNT_SESSION_REMEMBER = True  
-ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False  
-ACCOUNT_USERNAME_REQUIRED = False  
-ACCOUNT_AUTHENTICATION_METHOD = "email"  
-ACCOUNT_EMAIL_REQUIRED = True  
-ACCOUNT_UNIQUE_EMAIL = True  
-
 DEFAULT_FROM_EMAIL = "ikram@gmail.com"  
 
 # django-debug-toolbar
@@ -164,9 +137,5 @@ import socket
 
 hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
 INTERNAL_IPS = [ip[:-1] + "1" for ip in ips]
-
-# CACHE_MIDDLEWARE_ALIAS = "default"
-# CACHE_MIDDLEWARE_SECONDS = 604800
-# CACHE_MIDDLEWARE_KEY_PREFIX = ""
 
 CART_SESSION_ID = 'cart'

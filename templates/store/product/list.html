@@ -18,8 +18,8 @@
             {% endfor %}
         </ul>
     </div>
+    <div class="badge bg-primary">{{count}} {% if collection %} {{ collection.title }} {% endif %} Products</div>
     <div id="main" class="product-list">
-        <h1>{{count}} {% if collection %} {{ collection.title }} {% endif %} Products</h1>
         {% for product in products %}
             <div class="item">
             <a href="{{ product.get_absolute_url }}">

@@ -92,98 +92,41 @@ class ProductImage(models.Model):
         validators=[validate_file_size])
 
 
-class Customer(models.Model):
-    MEMBERSHIP_BRONZE = 'B'
-    MEMBERSHIP_SILVER = 'S'
-    MEMBERSHIP_GOLD = 'G'
-
-    MEMBERSHIP_CHOICES = [
-        (MEMBERSHIP_BRONZE, 'Bronze'),
-        (MEMBERSHIP_SILVER, 'Silver'),
-        (MEMBERSHIP_GOLD, 'Gold'),
-    ]
-    phone = models.CharField(max_length=255)
-    birth_date = models.DateField(null=True, blank=True)
-    membership = models.CharField(
-        max_length=1, choices=MEMBERSHIP_CHOICES, default=MEMBERSHIP_BRONZE)
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f'{self.user.first_name} {self.user.last_name}'
-
-    @admin.display(ordering='user__first_name')
-    def first_name(self):
-        return self.user.first_name
-
-    @admin.display(ordering='user__last_name')
-    def last_name(self):
-        return self.user.last_name
-
-    class Meta:
-        ordering = ['user__first_name', 'user__last_name']
-        permissions = [
-            ('view_history', 'Can view history')
-        ]
-
 
 class Order(models.Model):
-    PAYMENT_STATUS_PENDING = 'P'
-    PAYMENT_STATUS_COMPLETE = 'C'
-    PAYMENT_STATUS_FAILED = 'F'
-    PAYMENT_STATUS_CHOICES = [
-        (PAYMENT_STATUS_PENDING, 'Pending'),
-        (PAYMENT_STATUS_COMPLETE, 'Complete'),
-        (PAYMENT_STATUS_FAILED, 'Failed')
-    ]
-
-    placed_at = models.DateTimeField(auto_now_add=True)
-    payment_status = models.CharField(
-        max_length=1, choices=PAYMENT_STATUS_CHOICES, default=PAYMENT_STATUS_PENDING)
-    customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
-
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    email = models.EmailField()
+    postal_code = models.CharField(max_length=20)
+    address = models.CharField(max_length=250)
+    city = models.CharField(max_length=100)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    paid = models.BooleanField(default=False)
     class Meta:
-        permissions = [
-            ('cancel_order', 'Can cancel order')
-        ]
+        ordering = ['-created']
+        indexes = [ models.Index(fields=['-created']), ]
 
-
+    def __str__(self):
+        return f'Order {self.id}'
+    def get_total_cost(self):
+        return sum(item.get_cost() for item in self.items.all())
+    
 class OrderItem(models.Model):
-    order = models.ForeignKey(
-        Order, on_delete=models.PROTECT, related_name='items')
-    product = models.ForeignKey(
-        Product, on_delete=models.PROTECT, related_name='orderitems')
-    quantity = models.PositiveSmallIntegerField()
-    unit_price = models.DecimalField(max_digits=6, decimal_places=2)
+    order = models.ForeignKey(Order,related_name='items', on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, related_name='order_items', on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    quantity = models.PositiveIntegerField(default=1)
 
+    def __str__(self):
+        return str(self.id)
+    def get_cost(self):
+        return self.price * self.quantity
 
-class Address(models.Model):
-    street = models.CharField(max_length=255)
-    city = models.CharField(max_length=255)
-    customer = models.ForeignKey(
-        Customer, on_delete=models.CASCADE)
-
-
-class Cart(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid4)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-
-class CartItem(models.Model):
-    cart = models.ForeignKey(
-        Cart, on_delete=models.CASCADE, related_name='items')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(1)]
-    )
-
-    class Meta:
-        unique_together = [['cart', 'product']]
 
 
 class Review(models.Model):
-    product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, related_name='reviews')
+    product = models.ForeignKey( Product, on_delete=models.CASCADE, related_name='reviews')
     name = models.CharField(max_length=255)
     description = models.TextField()
     date = models.DateField(auto_now_add=True)

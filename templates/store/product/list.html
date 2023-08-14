@@ -21,7 +21,7 @@
     
     <div class="text-center">
         <div class="row">
-            <div class="badge bg-primary mb-5">{{count}} {% if collection %} {{ collection.title }} {% endif %} Products</div>
+            <div class="badge bg-primary mb-3">{{count}} {% if collection %} {{ collection.title }} {% endif %} Products</div>
         {% for product in products %}
             <div class="col-6 col-lg-4 col-xl-3">
                 <a href="{{ product.get_absolute_url }}">

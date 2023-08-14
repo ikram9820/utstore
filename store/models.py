@@ -59,7 +59,9 @@ class Product(models.Model):
         Collection, on_delete=models.PROTECT, related_name='products')
     promotions = models.ManyToManyField(Promotion, blank=True)
 
+    objects = models.Manager()
     available = ProductAvailableManager()
+
 
     def __str__(self) -> str:
         return self.title

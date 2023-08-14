@@ -19,7 +19,7 @@
         </ul>
     </div>
     <div id="main" class="product-list">
-        <h1>{{count}} {% if collection %} {{ collection.title }} Products {% endif %}</h1>
+        <h1>{{count}} {% if collection %} {{ collection.title }} {% endif %} Products</h1>
         {% for product in products %}
             <div class="item">
             <a href="{{ product.get_absolute_url }}">

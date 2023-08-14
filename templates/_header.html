@@ -8,11 +8,20 @@
     
 
       <div class="d-flex align-items-center">
+
+        <a href="{% url 'store:cart_detail' %}" type="button" class="btn btn-sm btn-outline-secondary position-relative mx-3">
+          Cart
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+              {{ cart|length }}
+          </span>
+        </a>
+
+    
         <form action="" method="get" class="w-100 me-3" role="search">
           <input  name="query" class="form-control" placeholder="Search..." aria-label="Search">
         </form>
         {% if not request.user.is_authenticated %}
-        <a href="#" class="d-flex align-items-center col-lg-4 mb-2 mb-lg-0 link-body-emphasis text-decoration-none">
+        <a href="#" class="btn btn-sm btn-outline-secondary">
           Login
         </a>
         {% else %}

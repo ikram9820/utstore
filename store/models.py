@@ -94,6 +94,12 @@ class ProductImage(models.Model):
 
 
 class Order(models.Model):
+    class PaidStatus(models.TextChoices):
+        PENDING = "PD" , 'Pending'
+        SUCCESS = 'SC', 'Success'
+        FAILED = 'FA', 'Failed'
+
+
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.EmailField()
@@ -102,7 +108,8 @@ class Order(models.Model):
     city = models.CharField(max_length=100)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    paid = models.BooleanField(default=False)
+    paid = models.CharField(max_length=2, choices= PaidStatus.choices, default=PaidStatus.PENDING)
+    stripe_id = models.CharField(max_length=250, blank=True)
     class Meta:
         ordering = ['-created']
         indexes = [ models.Index(fields=['-created']), ]
@@ -111,6 +118,12 @@ class Order(models.Model):
         return f'Order {self.id}'
     def get_total_cost(self):
         return sum(item.get_cost() for item in self.items.all())
+    
+    def get_stripe_url(self):
+        if not self.stripe_id: return ''
+        if '_test_' in settings.STRIPE_SECRET_KEY: path = '/test/'
+        else: path = '/'  # Stripe path for real payments      
+        return f'https://dashboard.stripe.com{path}payments/{self.stripe_id}'
     
 class OrderItem(models.Model):
     order = models.ForeignKey(Order,related_name='items', on_delete=models.CASCADE)

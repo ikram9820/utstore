@@ -15,7 +15,7 @@
     <form action="{% url 'store:cart_add' product.id %}" method="post">
       {{ cart_product_form }}
       {% csrf_token %}
-      <input type="submit" value="Add to cart">
+      <button class="btn btn-sm btn-primary" type="submit"> Add to cart </button>
     </form>
     {{ product.description|linebreaks }}
  </div>

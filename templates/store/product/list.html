@@ -4,36 +4,49 @@
    {% if category %}{{ category.name }}{% else %}Products{% endif %}
 {% endblock %}
 {% block content %}
-    <div id="sidebar">
-        <h3>Categories</h3>
-        <ul>
-            <li {% if not collection %}class="selected"{% endif %}>
-            <a href="{% url 'store:product_list' %}">All</a>
-            </li>
-            {% for c in collections %}
-            <li {% if collection.slug == c.slug %}class="selected"
-            {% endif %}>
-            <a href="{{ c.get_absolute_url }}">{{ c.title }}</a>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
+     
     
     <div class="text-center">
         <div class="row">
-            <div class="badge bg-primary mb-3">{{count}} {% if collection %} {{ collection.title }} {% endif %} Products</div>
-        {% for product in products %}
-            <div class="col-6 col-lg-4 col-xl-3">
-                <a href="{{ product.get_absolute_url }}">
-                <img  class="img-fluid" src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'img/no_image.png' %}{% endif %}">
-                </a>
-                <div>
-                    <a href="{{ product.get_absolute_url }}">{{ product.title }}</a>
-                    <br>
-                    ${{ product.unit_price }}
+            <div class="row">
+                <div class="col-6 col-lg-3">
+                    <select class="form-select form-select-sm" id="collectionDropdown">
+                        <option {% if not collection %} selected {% endif %} value="{% url 'store:product_list' %}">Select Category</option>
+                        {% for c in collections %}
+                        <option {% if collection.slug == c.slug %} selected {% endif %} 
+                                value="{{ c.get_absolute_url }}">{{ c.title }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
+                <div class="col-4 col-lg-2">
+                    <div class="badge bg-primary mb-3">{{count}} {% if collection %} {{ collection.title }} {% endif %} Products</div>
+                    
+                </div>
+
             </div>
-        {% endfor %}
+            {% for product in products %}
+                <div class="col-6 col-lg-4 col-xl-3">
+                    <a href="{{ product.get_absolute_url }}">
+                    <img  class="img-fluid" src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'img/no_image.png' %}{% endif %}">
+                    </a>
+                    <div>
+                        <a href="{{ product.get_absolute_url }}">{{ product.title }}</a>
+                        <br>
+                        ${{ product.unit_price }}
+                    </div>
+                </div>
+            {% endfor %}
         </div>
     </div>
+
+    <script>
+        const dropdown = document.getElementById("collectionDropdown");
+        
+        dropdown.addEventListener("change", function() {
+            const selectedValue = dropdown.options[dropdown.selectedIndex].value;
+
+            window.location.href = selectedValue;
+
+        });
+    </script>
 {% endblock %}

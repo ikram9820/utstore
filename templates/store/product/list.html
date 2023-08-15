@@ -27,7 +27,11 @@
             {% for product in products %}
                 <div class="col-6 col-lg-4 col-xl-3">
                     <a href="{{ product.get_absolute_url }}">
-                    <img  class="img-fluid" src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'img/no_image.png' %}{% endif %}">
+
+                    {% with image=product.images.all|first %}
+                        <img class="rounded img-fluid img-thumbnail h-75 w-100" src="{% if image %}{{ image.image.url }}{% else %}
+                        {% static 'img/no_image.png' %}{% endif %}">
+                    {% endwith %}
                     </a>
                     <div>
                         <a href="{{ product.get_absolute_url }}">{{ product.title }}</a>

@@ -2,7 +2,7 @@ from django import forms
 
 from store.models import Order
 
-PRODUCT_QUANTITY_CHOICES = [(i,str(i)) for i in range(21)]
+PRODUCT_QUANTITY_CHOICES = [(i,str(i)) for i in range(1,21)]
 
 class CartAddProductForm(forms.Form):
     quantity = forms.TypedChoiceField(coerce=int,initial=1, choices=PRODUCT_QUANTITY_CHOICES)

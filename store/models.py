@@ -14,11 +14,6 @@ class ProductAvailableManager(models.Manager):
     def get_queryset(self) -> QuerySet:
         return super().get_queryset().filter(inventory__gte=1)
 
-class Promotion(models.Model):
-    description = models.CharField(max_length=255)
-    discount = models.FloatField()
-
-
 class Collection(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255,unique=True,null=True,blank=True)
@@ -57,11 +52,9 @@ class Product(models.Model):
     last_update = models.DateTimeField(auto_now=True)
     collection = models.ForeignKey(
         Collection, on_delete=models.PROTECT, related_name='products')
-    promotions = models.ManyToManyField(Promotion, blank=True)
 
     objects = models.Manager()
     available = ProductAvailableManager()
-
 
     def __str__(self) -> str:
         return self.title
@@ -73,8 +66,6 @@ class Product(models.Model):
         if not self.slug:
             self.slug = slugify(self.title)
         super().save(*args, **kwargs)
-
-
 
     class Meta:
         ordering = ['title']
@@ -136,10 +127,3 @@ class OrderItem(models.Model):
     def get_cost(self):
         return self.price * self.quantity
 
-
-
-class Review(models.Model):
-    product = models.ForeignKey( Product, on_delete=models.CASCADE, related_name='reviews')
-    name = models.CharField(max_length=255)
-    description = models.TextField()
-    date = models.DateField(auto_now_add=True)

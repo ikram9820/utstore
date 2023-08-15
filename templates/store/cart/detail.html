@@ -22,8 +22,10 @@
         <tr>
         <td>
             <a href="{{ product.get_absolute_url }}">
-            <img src="{% if product.image %}{{ product.image.url }}
-            {% else %}{% static 'img/no_image.png' %}{% endif %}">
+                {% with image=product.images.all|first %}
+                <img class="rounded" src="{% if image %}{{ image.image.url }}{% else %}
+                                          {% static 'img/no_image.png' %}{% endif %}">
+                {% endwith %}
             </a>
         </td>
         <td>{{ product.title }}</td>

@@ -32,7 +32,8 @@ INSTALLED_APPS = [
     # Third-party
     "debug_toolbar",
     # Local
-    "store",
+    'payment.apps.PaymentConfig',
+    "store.apps.StoreConfig",
 ]
 
 MIDDLEWARE = [
@@ -130,7 +131,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SITE_ID = 1
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  
-DEFAULT_FROM_EMAIL = "ikram@gmail.com"  
+DEFAULT_FROM_EMAIL = "ikram9820khan@gmail.com"  
 
 # django-debug-toolbar
 import socket
@@ -139,3 +140,8 @@ hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
 INTERNAL_IPS = [ip[:-1] + "1" for ip in ips]
 
 CART_SESSION_ID = 'cart'
+
+STRIPE_PUBLISHABLE_KEY = env("STRIPE_PUBLISHABLE_KEY") # Publishable key
+STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY") # Secret key
+STRIPE_API_VERSION = '2022-08-01'
+STRIPE_WEBHOOK_SECRET= env("STRIPE_WEBHOOK_SECRET")

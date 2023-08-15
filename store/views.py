@@ -1,3 +1,4 @@
+from django.urls import reverse
 from .models import OrderItem, Product,Collection
 from django.shortcuts import redirect, render,get_object_or_404
 from django.views.decorators.http import require_POST
@@ -53,7 +54,8 @@ def order_create(request):
                 OrderItem.objects.create(order=order, product=item['product'],
                                          price=item['price'],quantity=item['quantity'])
             cart.clear()
-            return render(request,'store/order/created.html',{'order': order})
+            request.session['order_id'] = order.id
+            return redirect(reverse('payment:process'))
     else:
         form = OrderCreateForm()
     return render(request,'store/order/create.html',{'cart': cart, 'form': form})

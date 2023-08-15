@@ -15,3 +15,16 @@ $ python manage.py migrate
 $ python manage.py seed_db
 $ python manage.py runserver
 ```
+
+## Home
+![Default Home View](./ss/ss2.png?raw=true "Title")
+## Detail
+![Default Home View](./ss/ss1.png?raw=true "Title")
+## Cart
+![Default Home View](./ss/ss3.png?raw=true "Title")
+## Checkout
+![Default Home View](./ss/ss4.png?raw=true "Title")
+## Order
+![Default Home View](./ss/ss5.png?raw=true "Title")
+## Stripe Payment
+![Default Home View](./ss/ss6.png?raw=true "Title")

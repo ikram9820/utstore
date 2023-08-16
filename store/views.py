@@ -1,10 +1,12 @@
 from django.urls import reverse
-from .models import Order, OrderItem, Product,Collection
+from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import redirect, render,get_object_or_404
 from django.views.decorators.http import require_POST
-from django.contrib.admin.views.decorators import staff_member_required
-from .cart import Cart
+
+from .recommender import Recommender
+from .models import Order, OrderItem, Product,Collection
 from .forms import CartAddProductForm, OrderCreateForm, SearchForm
+from .cart import Cart
 
 def product_list(request,collection_slug=None):
     collection = None
@@ -19,7 +21,10 @@ def product_list(request,collection_slug=None):
 def product_detail(request,id,slug):
     product = get_object_or_404(Product, id=id, slug=slug, inventory__gte=1)
     cart_product_form = CartAddProductForm()
-    return render(request,"store/product/detail.html",{"product":product,'cart_product_form': cart_product_form})
+    r = Recommender()
+    recommended_products = r.suggest_products_for([product], 4)
+    return render(request,"store/product/detail.html",{"product":product,'recommended_products':\
+                                                       recommended_products,'cart_product_form': cart_product_form})
 
 def product_search(request):
     form = SearchForm()
@@ -54,7 +59,13 @@ def cart_detail(request):
     print("cart len:",len(cart))
     for item in cart:
         item['update_quantity_form'] = CartAddProductForm(initial={'quantity': item['quantity'],'override': True})
-    return render(request, 'store/cart/detail.html', {'cart': cart})
+    r = Recommender()
+    cart_products = [item['product'] for item in cart]
+    if(cart_products):
+        recommended_products = r.suggest_products_for(cart_products, max_results=4)
+    else:
+        recommended_products = []
+    return render(request, 'store/cart/detail.html', {'cart': cart,"recommended_products": recommended_products})
 
 
 def order_create(request):
@@ -77,3 +88,4 @@ def order_create(request):
 def admin_order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     return render(request,'store/order/detail.html',{'order': order})
+

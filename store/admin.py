@@ -125,6 +125,7 @@ def export_to_csv(modeladmin, request, queryset):
     return response
 export_to_csv.short_description = 'Export to CSV'
 
+
 def order_payment(obj):
     url = obj.get_stripe_url()
     if obj.stripe_id:
@@ -137,6 +138,8 @@ order_payment.short_description = 'Stripe payment'
 def order_detail(obj):
     url = reverse('store:admin_order_detail', args=[obj.id])
     return mark_safe(f'<a href="{url}">View</a>')
+
+
 
 @admin.register(models.Order)
 class OrderAdmin(admin.ModelAdmin):

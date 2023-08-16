@@ -85,11 +85,6 @@ class ProductImage(models.Model):
 
 
 class Order(models.Model):
-    class PaidStatus(models.TextChoices):
-        PENDING = "PD" , 'Pending'
-        SUCCESS = 'SC', 'Success'
-        FAILED = 'FA', 'Failed'
-
 
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -99,7 +94,7 @@ class Order(models.Model):
     city = models.CharField(max_length=100)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    paid = models.CharField(max_length=2, choices= PaidStatus.choices, default=PaidStatus.PENDING)
+    paid = models.BooleanField(default=False)
     stripe_id = models.CharField(max_length=250, blank=True)
     class Meta:
         ordering = ['-created']

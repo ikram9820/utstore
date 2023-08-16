@@ -1,9 +1,10 @@
 from django.urls import reverse
-from .models import OrderItem, Product,Collection
+from .models import Order, OrderItem, Product,Collection
 from django.shortcuts import redirect, render,get_object_or_404
 from django.views.decorators.http import require_POST
+from django.contrib.admin.views.decorators import staff_member_required
 from .cart import Cart
-from .forms import CartAddProductForm, OrderCreateForm
+from .forms import CartAddProductForm, OrderCreateForm, SearchForm
 
 def product_list(request,collection_slug=None):
     collection = None
@@ -19,6 +20,18 @@ def product_detail(request,id,slug):
     product = get_object_or_404(Product, id=id, slug=slug, inventory__gte=1)
     cart_product_form = CartAddProductForm()
     return render(request,"store/product/detail.html",{"product":product,'cart_product_form': cart_product_form})
+
+def product_search(request):
+    form = SearchForm()
+    query = None
+    results = []
+    if 'query' in request.GET:
+        form = SearchForm(request.GET)
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            results = Product.available.filter(title__icontains = query)
+            # results = Product.available.annotate(similarity=TrigramSimilarity('title', query),).filter(similarity__gt=0.1).order_by('-similarity')
+    return render(request,'store/product/search.html', {'form': form,'query': query,'results': results})
 
 @require_POST
 def cart_add(request,product_id):
@@ -59,3 +72,8 @@ def order_create(request):
     else:
         form = OrderCreateForm()
     return render(request,'store/order/create.html',{'cart': cart, 'form': form})
+
+@staff_member_required
+def admin_order_detail(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    return render(request,'store/order/detail.html',{'order': order})
